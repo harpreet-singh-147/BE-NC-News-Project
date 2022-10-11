@@ -1,14 +1,21 @@
 const express = require("express");
 const app = express();
 const { getTopics } = require("./controllers/controller.topics.js");
-const { getArticle } = require("./controllers/controller.articles.js");
+const {
+  getArticle,
+  updateArticleById,
+} = require("./controllers/controller.articles.js");
 const { getUsers } = require("./controllers/controller.users.js");
+
+app.use(express.json());
 
 app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:article_id", getArticle);
 
 app.get("/api/users", getUsers);
+
+app.patch("/api/articles/:article_id", updateArticleById);
 
 //JS errors
 app.use((err, req, res, next) => {

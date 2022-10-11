@@ -11,7 +11,7 @@ afterAll(() => {
   return db.end();
 });
 
-describe("GET", () => {
+describe("GET /api/topics", () => {
   test("200: Responds with an array of topic objects, each of which has the properties - 'slug', 'description'", () => {
     return request(app)
       .get("/api/topics")
@@ -37,7 +37,7 @@ describe("GET", () => {
   });
 });
 
-describe("GET", () => {
+describe("GET /api/articles/:article_id", () => {
   test(`200: /api/articles/:article_id - 
     Responds with an article object, that has the following properties:
         "author" which is the "username" from the users table
@@ -85,8 +85,8 @@ describe("GET", () => {
   });
 });
 
-describe("GET", () => {
-  test(`200: Responds with an array of objects, each object should have the following property: username, name avatar_url`, () => {
+describe("GET /api/users", () => {
+  test(`200: Responds with an array of user objects, each user object should have the following property: username, name avatar_url`, () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -101,13 +101,87 @@ describe("GET", () => {
         });
       });
   });
-  test("should return 404 page not found for route that does not exist", () => {
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test(`200: responds with a modified article with votes updated accordingly (increments the votes)`, () => {
     return request(app)
-      .get("/api/notARoute")
+      .patch("/api/articles/1")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then(({ body }) => {
+        const { updatedArticle } = body;
+        expect(updatedArticle.votes).toBe(105);
+      });
+  });
+  test(`200: responds with a modified article with votes updated accordingly with negative number (decrements the votes)`, () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -5 })
+      .expect(200)
+      .then(({ body }) => {
+        const { updatedArticle } = body;
+        expect(updatedArticle.votes).toBe(95);
+      });
+  });
+  test(`200: responds with a modified article with votes updated accordingly and returns updated article`, () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then(({ body }) => {
+        const { updatedArticle } = body;
+        expect(updatedArticle).toEqual(
+          expect.objectContaining({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 105,
+          })
+        );
+      });
+  });
+  test(`404: returns an error message if the article_id doesn't exist in the database but is valid`, () => {
+    return request(app)
+      .patch(`/api/articles/9999999`)
+      .send({ inc_votes: 100 })
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("page not found");
+        expect(msg).toBe(`Article not found`);
+      });
+  });
+  test(`400: returns an error message if the user has made a bad request`, () => {
+    return request(app)
+      .patch(`/api/articles/penthouse`)
+      .send({ inc_votes: 100 })
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe(`bad request`);
+      });
+  });
+  test(`400: returns an error message if the user has made a bad request by not providing correct data type in the vote object`, () => {
+    return request(app)
+      .patch(`/api/articles/penthouse`)
+      .send({ inc_votes: "oneHundred" })
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe(`bad request`);
+      });
+  });
+  test(`400: returns an error message if the user has made a bad request by not providing correct key name in the vote object`, () => {
+    return request(app)
+      .patch(`/api/articles/penthouse`)
+      .send({ inc_vote: 100 })
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe(`bad request`);
       });
   });
 });
