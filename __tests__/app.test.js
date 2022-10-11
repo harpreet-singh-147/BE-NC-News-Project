@@ -84,3 +84,30 @@ describe("GET", () => {
       });
   });
 });
+
+describe("GET", () => {
+  test(`200: Responds with an array of objects, each object should have the following property: username, name avatar_url`, () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(Array.isArray(users)).toBe(true);
+        expect(users.length > 0).toBe(true);
+        users.forEach((user) => {
+          expect(user).toHaveProperty("username", expect.any(String));
+          expect(user).toHaveProperty("name", expect.any(String));
+          expect(user).toHaveProperty("avatar_url", expect.any(String));
+        });
+      });
+  });
+  test("should return 404 page not found for route that does not exist", () => {
+    return request(app)
+      .get("/api/notARoute")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("page not found");
+      });
+  });
+});
