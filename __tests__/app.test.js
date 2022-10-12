@@ -37,6 +37,103 @@ describe("GET /api/topics", () => {
   });
 });
 
+describe("GET /api/articles", () => {
+  test(`200: Responds with an articles array of article objects, each of which should have the following properties:
+    "author"    
+    "title"
+    "article_id"
+    "topic"
+    "created_at"
+    "votes"
+    "comment_count"`, () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles.length).not.toBe(0);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test(`200: articles are sorted by date in descending order by default`, () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test(`200: articles are sorted by given sort by query in descending order`, () => {
+    return request(app)
+      .get(`/api/articles?sort_by=author`)
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("author", { descending: true });
+      });
+  });
+  test(`200: articles are filtered by a passed query (topic)`, () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        const {
+          articles: [article],
+        } = body;
+        expect(article).toMatchObject({
+          article_id: 5,
+          author: "rogersop",
+          title: "UNCOVERED: catspiracy to bring down democracy",
+          topic: "cats",
+          created_at: "2020-08-03T13:14:00.000Z",
+          votes: 0,
+          comment_count: 2,
+        });
+      });
+  });
+  test(`200: returns empty array if there are no articles about the topic but the topic exists in the database`, () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toEqual([]);
+      });
+  });
+  test(`404: the query is not a valid topic (not found)`, () => {
+    return request(app)
+      .get("/api/articles?topic=wunderpus")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("no wunderpus found");
+      });
+  });
+  test(`400: for a sort_by that is not an existing column`, () => {
+    return request(app)
+      .get("/api/articles?sort_by=not_a_valid_column")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id", () => {
   test(`200: /api/articles/:article_id - 
     Responds with an article object, that has the following properties:
@@ -61,7 +158,7 @@ describe("GET /api/articles/:article_id", () => {
           body: "I find this existence challenging",
           created_at: "2020-07-09T20:11:00.000Z",
           votes: 100,
-          comment_count: "11",
+          comment_count: 11,
         });
       });
   });

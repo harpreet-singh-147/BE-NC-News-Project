@@ -3,6 +3,7 @@ const app = express();
 const { getTopics } = require("./controllers/controller.topics.js");
 const {
   getArticle,
+  getArticleById,
   updateArticleById,
 } = require("./controllers/controller.articles.js");
 const { getUsers } = require("./controllers/controller.users.js");
@@ -10,11 +11,10 @@ const { getUsers } = require("./controllers/controller.users.js");
 app.use(express.json());
 
 app.get("/api/topics", getTopics);
-
-app.get("/api/articles/:article_id", getArticle);
-
 app.get("/api/users", getUsers);
 
+app.get("/api/articles", getArticle);
+app.get("/api/articles/:article_id", getArticleById);
 app.patch("/api/articles/:article_id", updateArticleById);
 
 //JS errors
