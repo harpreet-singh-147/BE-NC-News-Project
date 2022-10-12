@@ -1,9 +1,48 @@
 const db = require("../db/connection.js");
 
+exports.fetchArticle = (sort_by = "created_at", topic) => {
+  const validColumns = [
+    "article_id",
+    "author",
+    "title",
+    "topic",
+    "created_at",
+    "votes",
+  ];
+  const validTopics = ["cats", "paper", "mitch"];
+  if (topic && !validTopics.includes(topic)) {
+    return Promise.reject({ status: 404, msg: `no ${topic} found` });
+  }
+
+  if (!validColumns.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
+  let queryStr = `
+        SELECT  
+        articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes,
+        COUNT (comment_id)::INT AS comment_count
+        FROM articles
+        LEFT JOIN comments
+        ON articles.article_id = comments.article_id`;
+
+  const queryValues = [];
+
+  if (topic) {
+    queryStr += ` WHERE topic = $1`;
+    queryValues.push(topic);
+  }
+
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} DESC;`;
+  return db.query(queryStr, queryValues).then(({ rows: articles }) => {
+    return articles;
+  });
+};
+
 exports.fetchArticleById = (article_id) => {
   return db
     .query(
-      `     SELECT articles.*, COUNT (comment_id) AS comment_count 
+      `     SELECT articles.*, COUNT (comment_id)::INT AS comment_count 
             FROM articles 
             LEFT JOIN comments 
             ON comments.article_id = articles.article_id
