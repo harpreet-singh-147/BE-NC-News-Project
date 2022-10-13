@@ -86,6 +86,26 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("author", { descending: true });
       });
   });
+  test(`200: order can be set to ascending`, () => {
+    return request(app)
+      .get(`/api/articles?sort_by=created_at&order=asc`)
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("created_at", {
+          descending: false,
+        });
+      });
+  });
+  test(`200: order can be set to descending`, () => {
+    return request(app)
+      .get(`/api/articles?sort_by=topic&order=desc`)
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("topic", { descending: true });
+      });
+  });
   test(`200: articles are filtered by a passed query (topic)`, () => {
     return request(app)
       .get("/api/articles?topic=cats")
@@ -114,6 +134,32 @@ describe("GET /api/articles", () => {
         expect(articles).toEqual([]);
       });
   });
+  test(`200: topic, sort_by and order queries can be used simultaneously in ascending order`, () => {
+    return request(app)
+      .get(`/api/articles?sort_by=article_id&topic=mitch&order=asc`)
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).not.toBe(0);
+        expect(articles).toBeSortedBy("article_id", { descending: false });
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test(`200: topic, sort_by and order queries can be used simultaneously in descending order`, () => {
+    return request(app)
+      .get(`/api/articles?sort_by=article_id&topic=mitch&order=desc`)
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).not.toBe(0);
+        expect(articles).toBeSortedBy("article_id", { descending: true });
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
   test(`404: the query is not a valid topic (not found)`, () => {
     return request(app)
       .get("/api/articles?topic=wunderpus")
@@ -130,6 +176,15 @@ describe("GET /api/articles", () => {
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("bad request");
+      });
+  });
+  test(`400: responds with an error message if the order passed in is not asc or desc`, () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=wrongOrderPassed")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("invalid order query");
       });
   });
 });
@@ -350,7 +405,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("POST /api/articles/:article_id/comments", () => {
+describe("POST /api/articles/:article_id/comments", () => {
   test(`201: should add a comment to given article ID`, () => {
     const insertComment = {
       username: "icellusedkars",

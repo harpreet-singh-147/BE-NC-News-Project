@@ -1,6 +1,7 @@
 const db = require("../db/connection.js");
 
-exports.fetchArticle = (sort_by = "created_at", topic) => {
+exports.fetchArticle = (sort_by = "created_at", topic, order = "desc") => {
+  if (order) order = order.toUpperCase();
   const validColumns = [
     "article_id",
     "author",
@@ -10,12 +11,16 @@ exports.fetchArticle = (sort_by = "created_at", topic) => {
     "votes",
   ];
   const validTopics = ["cats", "paper", "mitch"];
+  const validOrder = ["DESC", "ASC"];
   if (topic && !validTopics.includes(topic)) {
     return Promise.reject({ status: 404, msg: `no ${topic} found` });
   }
 
   if (!validColumns.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  if (order && !validOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "invalid order query" });
   }
 
   let queryStr = `
@@ -33,7 +38,7 @@ exports.fetchArticle = (sort_by = "created_at", topic) => {
     queryValues.push(topic);
   }
 
-  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} DESC;`;
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
   return db.query(queryStr, queryValues).then(({ rows: articles }) => {
     return articles;
   });
