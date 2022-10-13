@@ -5,11 +5,10 @@ const {
   fetchCommentsByArticleId,
   insertCommentByArtcielId,
 } = require("../models/model.articles.js");
-const { checkUsernameExists } = require("../db/seeds/utils.js");
 
 exports.getArticle = (req, res, next) => {
-  const { topic, sort_by } = req.query;
-  fetchArticle(sort_by, topic)
+  const { topic, sort_by, order } = req.query;
+  fetchArticle(sort_by, topic, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })
