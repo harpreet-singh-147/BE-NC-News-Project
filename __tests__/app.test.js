@@ -349,3 +349,79 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe.only("POST /api/articles/:article_id/comments", () => {
+  test(`201: should add a comment to given article ID`, () => {
+    const insertComment = {
+      username: "icellusedkars",
+      body: "WOW this is working!",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .expect(201)
+      .send(insertComment)
+      .then(({ body }) => {
+        const { addedComment } = body;
+        expect(addedComment).toMatchObject({
+          comment_id: 19,
+          body: "WOW this is working!",
+          article_id: 2,
+          author: "icellusedkars",
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test(`400: returns an error message if the request body is an empty object`, () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
+  test(`400: returns an error message if 'comment body' on the request body is missed`, () => {
+    const noCommentOnBody = {
+      username: "icellusedkars",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(noCommentOnBody)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
+
+  test(`400: returns an error message if the username doesn't exist in the database`, () => {
+    const commentFromNonExistentUser = {
+      username: "oneEyedWillie",
+      body: "The Goonies is a good film",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(commentFromNonExistentUser)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
+  test(`404: returns an error message if the article_id doesn't exist in the database but is valid`, () => {
+    const insertComment = {
+      username: "icellusedkars",
+      body: "Hi there!",
+    };
+    return request(app)
+      .post("/api/articles/99999999/comments")
+      .send(insertComment)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("article not found");
+      });
+  });
+});
