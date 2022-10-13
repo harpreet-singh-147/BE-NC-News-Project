@@ -5,6 +5,7 @@ const {
   getArticle,
   getArticleById,
   updateArticleById,
+  getCommentsByArticleId,
 } = require("./controllers/controller.articles.js");
 const { getUsers } = require("./controllers/controller.users.js");
 
@@ -15,6 +16,7 @@ app.get("/api/users", getUsers);
 
 app.get("/api/articles", getArticle);
 app.get("/api/articles/:article_id", getArticleById);
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.patch("/api/articles/:article_id", updateArticleById);
 
 //JS errors
@@ -28,7 +30,7 @@ app.use((err, req, res, next) => {
 
 //PSQL errors
 app.use((err, req, res, next) => {
-  const pqslErrorCodes = ["22P02"];
+  const pqslErrorCodes = ["22P02", "23502"];
   if (pqslErrorCodes.includes(err.code)) {
     res.status(400).send({ msg: "bad request" });
   } else {
