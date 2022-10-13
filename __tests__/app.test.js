@@ -248,7 +248,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(`Article not found`);
+        expect(msg).toBe(`article not found`);
       });
   });
   test(`400: returns an error message if the user has made a bad request`, () => {
@@ -263,7 +263,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
   test(`400: returns an error message if the user has made a bad request by not providing correct data type in the vote object`, () => {
     return request(app)
-      .patch(`/api/articles/penthouse`)
+      .patch(`/api/articles/1`)
       .send({ inc_votes: "oneHundred" })
       .expect(400)
       .then(({ body }) => {
@@ -273,8 +273,75 @@ describe("PATCH /api/articles/:article_id", () => {
   });
   test(`400: returns an error message if the user has made a bad request by not providing correct key name in the vote object`, () => {
     return request(app)
-      .patch(`/api/articles/penthouse`)
+      .patch(`/api/articles/1`)
       .send({ inc_vote: 100 })
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe(`bad request`);
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test(`200: Responds with an array of comments for the given article_id of which each comment should have the following properties:
+    "comment_id"    
+    "votes"
+    "created_at"
+    "author"
+    "body"
+    `, () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { articleComments } = body;
+        expect(Array.isArray(articleComments)).toBe(true);
+        expect(articleComments.length).not.toBe(0);
+        articleComments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+          });
+        });
+      });
+  });
+  test(`200: comments are sorted by date in descending order by default`, () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { articleComments } = body;
+        expect(articleComments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test(`200: returns an empty array if there are not any comments for the given article but the article exists in the database`, () => {
+    return request(app)
+      .get(`/api/articles/2/comments`)
+      .expect(200)
+      .then(({ body }) => {
+        const { articleComments } = body;
+        expect(articleComments.length).toBe(0);
+        expect(articleComments).toEqual([]);
+      });
+  });
+  test(`404: responds with an error message if the article doesn't exist in the database`, () => {
+    return request(app)
+      .get(`/api/articles/1000/comments`)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe(`article not found`);
+      });
+  });
+  test(`400: responds with an error message if the article_id is not valid`, () => {
+    return request(app)
+      .get(`/api/articles/sixtyninemillions/comments`)
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
