@@ -350,7 +350,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("POST /api/articles/:article_id/comments", () => {
+describe("POST /api/articles/:article_id/comments", () => {
   test(`201: should add a comment to given article ID`, () => {
     const insertComment = {
       username: "icellusedkars",

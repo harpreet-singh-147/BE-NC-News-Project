@@ -48,7 +48,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
     fetchCommentsByArticleId(article_id),
   ])
     .then((promises) => {
-      comments = promises[1];
+      const comments = promises[1];
       res.status(200).send({ articleComments: comments });
     })
     .catch((err) => {
