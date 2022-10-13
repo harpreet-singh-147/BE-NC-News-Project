@@ -3,7 +3,9 @@ const {
   fetchArticleById,
   modifyArticleById,
   fetchCommentsByArticleId,
+  insertCommentByArtcielId,
 } = require("../models/model.articles.js");
+const { checkUsernameExists } = require("../db/seeds/utils.js");
 
 exports.getArticle = (req, res, next) => {
   const { topic, sort_by } = req.query;
@@ -48,6 +50,23 @@ exports.getCommentsByArticleId = (req, res, next) => {
     .then((promises) => {
       comments = promises[1];
       res.status(200).send({ articleComments: comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postCommentByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+
+  Promise.all([
+    fetchArticleById(article_id),
+    insertCommentByArtcielId(article_id, username, body),
+  ])
+    .then((promises) => {
+      const comment = promises[1];
+      res.status(201).send({ addedComment: comment });
     })
     .catch((err) => {
       next(err);
