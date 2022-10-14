@@ -12,9 +12,7 @@ exports.getArticle = (req, res, next) => {
     .then((articles) => {
       res.status(200).send({ articles });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -22,9 +20,7 @@ exports.getArticleById = (req, res, next) => {
     .then((article) => {
       res.status(200).send({ article });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.updateArticleById = (req, res, next) => {
@@ -35,9 +31,7 @@ exports.updateArticleById = (req, res, next) => {
     .then((article) => {
       res.status(200).send({ updatedArticle: article });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
@@ -50,9 +44,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
       comments = promises[1];
       res.status(200).send({ articleComments: comments });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.postCommentByArticleId = (req, res, next) => {
@@ -67,7 +59,5 @@ exports.postCommentByArticleId = (req, res, next) => {
       const comment = promises[1];
       res.status(201).send({ addedComment: comment });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
