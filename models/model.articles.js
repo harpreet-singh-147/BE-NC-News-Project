@@ -9,6 +9,7 @@ exports.fetchArticle = (sort_by = "created_at", topic, order = "desc") => {
     "topic",
     "created_at",
     "votes",
+    "body",
   ];
   const validTopics = ["cats", "paper", "mitch"];
   const validOrder = ["DESC", "ASC"];
@@ -25,7 +26,7 @@ exports.fetchArticle = (sort_by = "created_at", topic, order = "desc") => {
 
   let queryStr = `
         SELECT  
-        articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes,
+        articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.body,
         COUNT (comment_id)::INT AS comment_count
         FROM articles
         LEFT JOIN comments
@@ -81,7 +82,7 @@ exports.modifyArticleById = (article_id, inc_votes) => {
 exports.fetchCommentsByArticleId = (article_id) => {
   return db
     .query(
-      `   SELECT comment_id, votes, created_at, author, body
+      `   SELECT comment_id, votes, created_at, author, body, article_id
           FROM comments
           WHERE comments.article_id = $1
           ORDER BY created_at DESC;`,
