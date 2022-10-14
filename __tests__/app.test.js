@@ -3,6 +3,7 @@ const app = require("../app.js");
 const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data");
+const requiredEndpoints = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(testData);
@@ -62,6 +63,7 @@ describe("GET /api/articles", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             comment_count: expect.any(Number),
+            body: expect.any(String),
           });
         });
       });
@@ -121,6 +123,7 @@ describe("GET /api/articles", () => {
           topic: "cats",
           created_at: "2020-08-03T13:14:00.000Z",
           votes: 0,
+          body: "Bastet walks amongst us, and the cats are taking arms!",
           comment_count: 2,
         });
       });
@@ -504,6 +507,27 @@ describe("DELETE /api/comments/:comment_id", () => {
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe(`bad request`);
+      });
+  });
+});
+
+describe("GET /api", () => {
+  test(`200: Responds with JSON describing all the available endpoints on API`, () => {
+    return request(app)
+      .get(`/api`)
+      .expect(200)
+      .then(({ body }) => {
+        const { endpoints } = body;
+        expect(endpoints).toEqual(requiredEndpoints);
+      });
+  });
+  test(`404: page not found`, () => {
+    return request(app)
+      .get(`/api/notARoute`)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe(`page not found`);
       });
   });
 });
