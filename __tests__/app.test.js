@@ -423,7 +423,7 @@ describe("POST /api/articles/:article_id/comments", () => {
           article_id: 2,
           author: "icellusedkars",
           votes: 0,
-          created_at: expect.any(String),
+          created_at: expect.toBeDateString(),
         });
       });
   });
@@ -477,6 +477,33 @@ describe("POST /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("article not found");
+      });
+  });
+});
+describe("DELETE /api/comments/:comment_id", () => {
+  test(`204: responds with no content and deletes the given comment by comment_id from the database`, () => {
+    return request(app)
+      .delete(`/api/comments/1`)
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test(`404: responds with an error message if comment_id doesn't exist in the database but is valid`, () => {
+    return request(app)
+      .delete(`/api/comments/9999999`)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe(`Comment not found`);
+      });
+  });
+  test(`400: responds with an error message if comment_id is not valid`, () => {
+    return request(app)
+      .delete(`/api/comments/notAnId`)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe(`bad request`);
       });
   });
 });
