@@ -32,7 +32,7 @@ describe("GET /api/topics", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe("page not found");
       });
   });
 });
@@ -166,7 +166,7 @@ describe("GET /api/articles", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe("no wunderpus found");
       });
   });
   test(`400: for a sort_by that is not an existing column`, () => {
@@ -175,7 +175,7 @@ describe("GET /api/articles", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe("bad request");
       });
   });
   test(`400: responds with an error message if the order passed in is not asc or desc`, () => {
@@ -184,7 +184,7 @@ describe("GET /api/articles", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe("invalid order query");
       });
   });
 });
@@ -223,7 +223,7 @@ describe("GET /api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe("article not found");
       });
   });
   test(`400: /api/articles/:article_id - invalid article_id`, () => {
@@ -232,7 +232,7 @@ describe("GET /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe("bad request");
       });
   });
 });
@@ -303,7 +303,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe(`article not found`);
       });
   });
   test(`400: returns an error message if the user has made a bad request`, () => {
@@ -313,7 +313,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe(`bad request`);
       });
   });
   test(`400: returns an error message if the user has made a bad request by not providing correct data type in the vote object`, () => {
@@ -323,7 +323,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe(`bad request`);
       });
   });
   test(`400: returns an error message if the user has made a bad request by not providing correct key name in the vote object`, () => {
@@ -333,7 +333,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe(`bad request`);
       });
   });
 });
@@ -391,7 +391,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe(`article not found`);
       });
   });
   test(`400: responds with an error message if the article_id is not valid`, () => {
@@ -400,7 +400,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe(`bad request`);
       });
   });
 });
@@ -434,7 +434,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe("bad request");
       });
   });
   test(`400: returns an error message if 'comment body' on the request body is missed`, () => {
@@ -447,7 +447,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe("bad request");
       });
   });
 
@@ -462,7 +462,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe("bad request");
       });
   });
   test(`404: returns an error message if the article_id doesn't exist in the database but is valid`, () => {
@@ -476,7 +476,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe("article not found");
       });
   });
 });
@@ -493,9 +493,8 @@ describe("DELETE /api/comments/:comment_id", () => {
     return request(app)
       .delete(`/api/comments/9999999`)
       .expect(404)
-      .then(({ body }) => {
-        const { msg } = body;
-        expect(msg).toBe(body.msg);
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe(`Comment not found`);
       });
   });
   test(`400: responds with an error message if comment_id is not valid`, () => {
@@ -504,7 +503,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe(body.msg);
+        expect(msg).toBe(`bad request`);
       });
   });
 });

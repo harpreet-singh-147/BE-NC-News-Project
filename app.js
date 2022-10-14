@@ -36,9 +36,7 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
   const pqslErrorCodes = ["22P02", "23502", "23503"];
   if (pqslErrorCodes.includes(err.code)) {
-    const { message } = err;
-    // console.log(message);
-    res.status(400).send({ msg: message });
+    res.status(400).send({ msg: "bad request" });
   } else {
     next(err);
   }
