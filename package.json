@@ -28,7 +28,6 @@
     "jest": "^27.5.1",
     "jest-extended": "^2.0.0",
     "jest-sorted": "^1.0.14",
-    
     "supertest": "^6.3.0"
   },
   "dependencies": {
@@ -41,5 +40,8 @@
     "setupFilesAfterEnv": [
       "jest-extended/all", "jest-sorted"
     ]
+  },
+    "engines": {
+    "node": "18.4.0"
   }
 }
