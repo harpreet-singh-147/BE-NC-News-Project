@@ -8,7 +8,7 @@ You can find the hosted version of the app here: https://hdnews.herokuapp.com/ap
 
 Accessing the ‘/api’ endpoint will present the client with a JSON file containing information about all the available endpoints with example responses. All endpoints were developed using jest and supertest to ensure controllers and models operated without issue.
 
-## Cloning this Repo
+## Cloning this repo
 
 In order to access this repo locally, you can either fork and clone this repo, or clone directly from the following url:
 
@@ -43,7 +43,7 @@ The developer dependencies used in this project are:
 
 ---
 
-## Creating Environment Variables
+## Creating environment variables
 
 Create 2 files in the root directory named:
 
@@ -92,15 +92,15 @@ npm run test
 
 ---
 
-## Node and Postgres Versions
+## Node and Postgres versions
 
-This app was made on Node Version:
+This app was made on Node version:
 
 ```
 node -v | v18.4.0
 ```
 
-Postgres Version:
+Postgres version:
 
 ```
 psql -V | 14.5
