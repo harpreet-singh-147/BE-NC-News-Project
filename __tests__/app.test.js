@@ -163,15 +163,15 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test(`404: the query is not a valid topic (not found)`, () => {
-    return request(app)
-      .get("/api/articles?topic=wunderpus")
-      .expect(404)
-      .then(({ body }) => {
-        const { msg } = body;
-        expect(msg).toBe("no wunderpus found");
-      });
-  });
+  // test(`404: the query is not a valid topic (not found)`, () => {
+  //   return request(app)
+  //     .get("/api/articles?topic=wunderpus")
+  //     .expect(404)
+  //     .then(({ body }) => {
+  //       const { msg } = body;
+  //       expect(msg).toBe("no wunderpus found");
+  //     });
+  // });
   test(`400: for a sort_by that is not an existing column`, () => {
     return request(app)
       .get("/api/articles?sort_by=not_a_valid_column")
