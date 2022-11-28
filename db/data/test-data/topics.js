@@ -1,14 +1,14 @@
 module.exports = [
   {
     description: "The man, the Mitch, the legend",
-    slug: "mitch",
+    slug: "coding",
   },
   {
     description: "Not dogs",
-    slug: "cats",
+    slug: "cooking",
   },
   {
     description: "what books are made of",
-    slug: "paper",
+    slug: "football",
   },
 ];

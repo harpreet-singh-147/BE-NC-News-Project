@@ -110,7 +110,7 @@ describe("GET /api/articles", () => {
   });
   test(`200: articles are filtered by a passed query (topic)`, () => {
     return request(app)
-      .get("/api/articles?topic=cats")
+      .get("/api/articles?topic=cooking")
       .expect(200)
       .then(({ body }) => {
         const {
@@ -120,7 +120,7 @@ describe("GET /api/articles", () => {
           article_id: 5,
           author: "rogersop",
           title: "UNCOVERED: catspiracy to bring down democracy",
-          topic: "cats",
+          topic: "cooking",
           created_at: "2020-08-03T13:14:00.000Z",
           votes: 0,
           body: "Bastet walks amongst us, and the cats are taking arms!",
@@ -130,7 +130,7 @@ describe("GET /api/articles", () => {
   });
   test(`200: returns empty array if there are no articles about the topic but the topic exists in the database`, () => {
     return request(app)
-      .get("/api/articles?topic=paper")
+      .get("/api/articles?topic=football")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
@@ -139,39 +139,39 @@ describe("GET /api/articles", () => {
   });
   test(`200: topic, sort_by and order queries can be used simultaneously in ascending order`, () => {
     return request(app)
-      .get(`/api/articles?sort_by=article_id&topic=mitch&order=asc`)
+      .get(`/api/articles?sort_by=article_id&topic=coding&order=asc`)
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
         expect(articles.length).not.toBe(0);
         expect(articles).toBeSortedBy("article_id", { descending: false });
         articles.forEach((article) => {
-          expect(article.topic).toBe("mitch");
+          expect(article.topic).toBe("coding");
         });
       });
   });
   test(`200: topic, sort_by and order queries can be used simultaneously in descending order`, () => {
     return request(app)
-      .get(`/api/articles?sort_by=article_id&topic=mitch&order=desc`)
+      .get(`/api/articles?sort_by=article_id&topic=coding&order=desc`)
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
         expect(articles.length).not.toBe(0);
         expect(articles).toBeSortedBy("article_id", { descending: true });
         articles.forEach((article) => {
-          expect(article.topic).toBe("mitch");
+          expect(article.topic).toBe("coding");
         });
       });
   });
-  // test(`404: the query is not a valid topic (not found)`, () => {
-  //   return request(app)
-  //     .get("/api/articles?topic=wunderpus")
-  //     .expect(404)
-  //     .then(({ body }) => {
-  //       const { msg } = body;
-  //       expect(msg).toBe("no wunderpus found");
-  //     });
-  // });
+  test(`404: the query is not a valid topic (not found)`, () => {
+    return request(app)
+      .get("/api/articles?topic=wunderpus")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("no wunderpus found");
+      });
+  });
   test(`400: for a sort_by that is not an existing column`, () => {
     return request(app)
       .get("/api/articles?sort_by=not_a_valid_column")
@@ -211,7 +211,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(article).toEqual({
           article_id: 1,
           title: "Living in the shadow of a great man",
-          topic: "mitch",
+          topic: "coding",
           author: "butter_bridge",
           body: "I find this existence challenging",
           created_at: "2020-07-09T20:11:00.000Z",
@@ -290,7 +290,7 @@ describe("PATCH /api/articles/:article_id", () => {
           expect.objectContaining({
             article_id: 1,
             title: "Living in the shadow of a great man",
-            topic: "mitch",
+            topic: "coding",
             author: "butter_bridge",
             body: "I find this existence challenging",
             created_at: "2020-07-09T20:11:00.000Z",

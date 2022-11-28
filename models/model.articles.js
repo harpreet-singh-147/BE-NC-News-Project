@@ -12,8 +12,12 @@ exports.fetchArticle = (sort_by = "created_at", topic, order = "desc") => {
     "body",
     "comment_count",
   ];
-
+  const validTopics = ["cooking", "football", "coding"];
   const validOrder = ["DESC", "ASC"];
+
+  if (topic && !validTopics.includes(topic)) {
+    return Promise.reject({ status: 404, msg: `no ${topic} found` });
+  }
 
   if (!validColumns.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "bad request" });
