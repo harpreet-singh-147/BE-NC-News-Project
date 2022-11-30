@@ -2,7 +2,7 @@
 
 Welcome to the hdnews API, created as part of a week-long coding sprint at the [Northcoders bootcamp](https://northcoders.com/) to showcase my skills as a back-end Javascript developer.
 
-The hdnews API is an easy-to-use RESTFUL API which allows the client to create, retrieve, update or delete JSON metadata for a number of topics, articles, users, and comments. This app will allow clients to interact with a PostgreSQL relational database (which was provided by [Northcoders](https://northcoders.com/)) hosted on heroku.
+The hdnews API is an easy-to-use RESTFUL API which allows the client to create, retrieve, update or delete JSON metadata for a number of topics, articles, users, and comments. This app will allow clients to interact with a PostgreSQL relational database (which was provided by [Northcoders](https://northcoders.com/)) hosted on cyclic.
 
 You can find the hosted version of the app here: https://hd-news-be.cyclic.app/api
 
